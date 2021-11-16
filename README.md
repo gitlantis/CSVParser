@@ -1,7 +1,6 @@
 # CSV upload project
 
-.Net MVC project to upload csv files into database.
-![main screen](./assets/main_screen.png)
+.Net MVC project to upload ```.csv``` content into database.
 
 ### Projects contents
 *  CSVParse project
@@ -13,6 +12,8 @@
 * [jQuery JavaScript Library v3.5.1](https://jquery.com/)
 * [DataTables v1.11.3](https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js)
 * [bootstrap-toast](https://www.jqueryscript.net/other/bootstrap-toasts-manager.html)
+
+![main screen](./assets/main_screen.png)
 
 ### Prepearing database
 
