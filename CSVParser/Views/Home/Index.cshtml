@@ -1,0 +1,112 @@
+﻿@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Employees list</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <input id="file-input" type="file" accept=".csv" />
+        </div>
+        <div class="form-group">
+            <input id="post-form" type="submit" value="Import" class="btn btn-primary" />
+        </div>
+    </div>
+</div>
+
+<table class="table" id="emp-table"></table>
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+
+            var firstload = true;
+
+            var emp_url = '@Url.Action("GetEmployees", "Home")';
+
+            var table = $("#emp-table").DataTable({
+                "stateSave": true,
+                "autoWidth": true,
+                "processing": true,
+                "serverSide": true,
+                "paging": true,
+                "filter": true,
+                "order":[[3, 'asc']],
+                "searching": { regex: true },
+                "ajax": {
+                    "url": emp_url,
+                    "type": "POST",
+                    "datatype": "application/json",
+                    "async": false,
+                    "data": function (data) {
+
+                        if (firstload) {
+                            data.order[0].column = 3;
+                            data.order[0].dir = "asc";
+                            firstload = false;
+                        }
+
+                        return data;
+                    },
+                    "dataSrc": function (json) {
+                        return json.data;
+                    }
+                },
+                "columns": [
+                    { "data": "id", "name": "Id", "title": "Id", "autoWidth": true },
+                    { "data": "payroll_Number", "name": "Payroll_Number", "title": "Payroll Number", "autoWidth": true },
+                    { "data": "forenames", "name": "Forenames", "title": "Forename", "autoWidth": true },
+                    { "data": "surname", "name": "Surname", "title": "Surname", "autoWidth": true, },
+                    { "data": "date_of_Birth", "name": "Date_of_Birth", "title": "Birth day", "autoWidth": true },
+                    { "data": "telephone", "name": "Telephone", "title": "Telephone", "autoWidth": true },
+                    { "data": "mobile", "name": "Mobile", "title": "Mobile", "autoWidth": true },
+                    { "data": "address", "name": "Address", "title": "Address", "autoWidth": true },
+                    { "data": "address_2", "name": "Address_2", "title": "Address 2", "autoWidth": true },
+                    { "data": "postcode", "name": "Postcode", "title": "Postcode", "autoWidth": true },
+                    { "data": "eMail_Home", "name": "EMail_Home", "title": "EMail", "autoWidth": true },
+                    { "data": "start_Date", "name": "Start_Date", "title": "Start Date", "autoWidth": true }
+                ]
+            });
+
+            $("#post-form").click(function () {
+
+                var formData = new FormData();
+                formData.append('file', $('#file-input')[0].files[0]);
+
+                var url = '@Url.Action("Upload", "Home")';
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (result) {
+                        $.toast({
+                            title: 'Saved',
+                            content: 'loaded: ' + result.loaded + ' out of ' + (result.notLoaded + result.loaded) + '<br/>not loaded: ' + result.notLoaded,
+                            type: 'success',
+                            delay: 5000,
+                            dismissible: true,
+                        });
+                        table.draw();
+                    },
+                    error: function (jqXHR) {
+                        $.toast({
+                            title: 'Error',
+                            content: jqXHR.responseText,
+                            type: 'error',
+                            delay: 5000,
+                            dismissible: true,
+
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}
